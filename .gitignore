@@ -1,0 +1,9 @@
+.DS_Store
+~$*.xlsx
+~$*.xls
+*.xlsx
+*.xls
+开票汇总_*.xlsx
+送货单_生成.xlsx
+*.pyc
+__pycache__/

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>开票汇总工坊</title>
+  <meta name="description" content="浏览器本地合并多个对账单 Excel，生成开票汇总并导出。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <div class="backdrop"></div>
+  <main class="page-shell">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <p class="eyebrow">Invoice Summary Studio</p>
+        <h1>对账单一键汇总成开票清单</h1>
+        <p class="lead">
+          直接把多个 Excel 拖进来，浏览器本地完成识别、汇总、预览和导出。
+          不依赖后端，适合挂到 GitHub Pages 持续部署。
+        </p>
+      </div>
+      <div class="hero-note">
+        <div class="note-label">当前规则</div>
+        <ul>
+          <li>自动识别不同工作表的表头位置和列顺序</li>
+          <li>支持多文件、多工作表合并汇总</li>
+          <li>井座、闸阀方井按“数量 × 高度”换算米数</li>
+          <li>空行、页脚合计行自动过滤</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="workspace-grid">
+      <div class="panel upload-panel">
+        <div class="panel-head">
+          <h2>上传源文件</h2>
+          <p>支持 .xlsx / .xls，多选后统一汇总。</p>
+        </div>
+
+        <label class="dropzone" id="dropzone" for="file-input">
+          <input id="file-input" type="file" accept=".xlsx,.xls" multiple>
+          <span class="drop-icon">+</span>
+          <strong>点击选择文件，或拖拽到这里</strong>
+          <span>所有处理都在本地浏览器完成，不上传到服务器。</span>
+        </label>
+
+        <div class="selected-files" id="selected-files"></div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" id="generate-btn" disabled>生成汇总预览</button>
+          <button class="btn btn-secondary" id="download-btn" disabled>下载开票汇总</button>
+          <button class="btn btn-ghost" id="reset-btn" disabled>清空</button>
+        </div>
+      </div>
+
+      <div class="panel stats-panel">
+        <div class="panel-head">
+          <h2>汇总结果</h2>
+          <p>先生成预览，再导出 Excel。</p>
+        </div>
+        <div class="stats-grid" id="stats-grid">
+          <article class="stat-card muted">
+            <span>来源文件</span>
+            <strong>0</strong>
+          </article>
+          <article class="stat-card muted">
+            <span>来源工作表</span>
+            <strong>0</strong>
+          </article>
+          <article class="stat-card muted">
+            <span>商品行数</span>
+            <strong>0</strong>
+          </article>
+          <article class="stat-card accent muted">
+            <span>总金额</span>
+            <strong>0.00</strong>
+          </article>
+        </div>
+
+        <div class="meta-stack" id="meta-stack">
+          <div class="meta-block">
+            <span>客户</span>
+            <strong>等待生成</strong>
+          </div>
+          <div class="meta-block">
+            <span>地址</span>
+            <strong>等待生成</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel preview-panel">
+      <div class="panel-head panel-head-split">
+        <div>
+          <h2>商品预览</h2>
+          <p>相同 商品名称 + 规格型号 + 单位 + 单价 的行会自动合并。</p>
+        </div>
+        <div class="status-badge" id="status-badge">等待文件</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>规格型号</th>
+              <th>数量</th>
+              <th>单价(元)</th>
+              <th>金额(元)</th>
+            </tr>
+          </thead>
+          <tbody id="preview-body">
+            <tr>
+              <td colspan="5" class="empty-cell">选择 Excel 文件后生成预览。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel issues-panel" id="issues-panel" hidden>
+      <div class="panel-head">
+        <h2>处理提示</h2>
+        <p>这里会显示被跳过的工作表或格式异常。</p>
+      </div>
+      <ul class="issue-list" id="issue-list"></ul>
+    </section>
+  </main>
+</body>
+</html>
